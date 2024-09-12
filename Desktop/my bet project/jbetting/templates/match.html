@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Result</title>
+</head>
+<body>
+    <h1>Match Result</h1>
+    <p>{{ team1.name }} vs {{ team2.name }}</p>
+    <p>Result: {{ match.result }}</p>
+    <a href="{{ url_for('index') }}">Play Another Match</a>
+</body>
+</html>

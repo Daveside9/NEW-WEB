@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J Betting - Virtual Football</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+</head>
+<body>
+    <header>
+        <h1>J Betting</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Live Betting</a></li>
+                <li><a href="#">Virtual Sports</a></li>
+                <li><a href="#">Casino</a></li>
+                <li><a href="#">Results</a></li>
+                <li><a href="#">Promotions</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Virtual Football</h2>
+        <form action="{{ url_for('play_match') }}" method="post">
+            <button type="submit" class="bet-button">Start Match</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 J Betting. All rights reserved.</p>
+    </footer>
+</body>
+</html>
