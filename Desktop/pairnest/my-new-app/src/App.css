@@ -1,0 +1,179 @@
+/* Global styling */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+.App {
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  background-color: transparent;
+  padding: 20px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+}
+
+.header nav ul {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.header nav ul li {
+  margin-left: 20px;
+}
+
+.header nav ul li a {
+  text-decoration: none;
+  font-size: 16px;
+  color: #000;
+  background-color: #f0f0f0;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.header nav ul li a:hover {
+  background-color: #ccc;
+}
+
+/* Home page styling */
+.homepage-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-image: url('https://www.faithhopespirit.com/wp-content/uploads/2019/02/Places-to-Meet-your-Future-Life-Partner-680x450.jpg');
+  background-size: cover; /* Cover the whole area */
+  background-position: center; /* Center the image */
+}
+
+.overlay-content {
+  text-align: center;
+}
+
+.overlay-content h1 {
+  font-size: 3rem;
+  margin: 0;
+}
+
+.overlay-content p {
+  font-size: 1.5rem;
+}
+
+/* Login and SignUp page styling */
+.login-page, .signup-page {
+  padding: 20px;
+}
+
+form div {
+  margin-bottom: 10px;
+}
+
+form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+form input {
+  padding: 10px;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 20px;
+}
+
+form button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #0056b3;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure the modal is above other content */
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile page styling */
+.profile-page {
+  background-color: #6a0dad; /* Purple background */
+  color: white; /* Text color for profile page */
+  padding: 20px;
+  border-radius: 8px;
+  width: 60%;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.profile-header {
+  text-align: center;
+  font-size: 2rem;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-form .form-group {
+  margin: 10px 0;
+}
+
+.profile-form label {
+  margin-bottom: 5px;
+}
+
+.profile-form input, 
+.profile-form textarea {
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.profile-form button {
+  padding: 10px;
+  background-color: #ff6f61; /* A contrasting button color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.profile-form button:hover {
+  background-color: #ff4f4f; /* Darker shade on hover */
+}
