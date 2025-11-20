@@ -1,0 +1,1 @@
+mongodb+srv://daveside00468_db_user:<Davometer00468>@cluster0.rmzitri.mongodb.net/

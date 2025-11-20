@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vendor Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: #28a745; color: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-number { font-size: 2em; font-weight: bold; color: #28a745; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; }
+        .status { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; }
+        .active { background: #d4edda; color: #155724; }
+        .inactive { background: #f8d7da; color: #721c24; }
+        .tab-buttons { display: flex; margin-bottom: 20px; }
+        .tab-button { padding: 10px 20px; background: #f8f9fa; border: 1px solid #ddd; cursor: pointer; }
+        .tab-button.active { background: #28a745; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Vendor Dashboard</h1>
+            <p>Welcome, <span id="vendor-name">Vendor</span></p>
+        </div>
+
+        <div class="tab-buttons">
+            <button class="tab-button active" onclick="switchTab('overview')">Overview</button>
+            <button class="tab-button" onclick="switchTab('services')">My Services</button>
+            <button class="tab-button" onclick="switchTab('add-service')">Add Service</button>
+            <button class="tab-button" onclick="switchTab('vendors')">All Vendors</button>
+            <button class="tab-button" onclick="switchTab('earnings')">Earnings</button>
+            <button class="tab-button" onclick="switchTab('analytics')">Analytics</button>
+            <button class="tab-button" onclick="switchTab('notifications')">Notifications</button>
+            <button class="tab-button" onclick="switchTab('sessions')">Sessions</button>
+        </div>
+
+        <div id="overview" class="tab-content active">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-earnings">₦0</div>
+                    <div>Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="active-sessions">0</div>
+                    <div>Active Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="vendor-ratings">0.0</div>
+                    <div>Ratings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-users">0</div>
+                    <div>Users Count</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="active-users">0</div>
+                    <div>Active Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="users-per-region">0</div>
+                    <div>Users Per Region</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>Smart Contract Summary</h3>
+                <div id="contract-summary" style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <p id="earnings-summary">No recent earnings</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="services" class="tab-content">
+            <div class="section">
+                <h3>My Services</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Rate</th>
+                            <th>Earnings</th>
+                            <th>Users</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="services-list">
+                        <!-- Services will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="vendors" class="tab-content">
+            <div class="section">
+                <h3>Registered Vendors</h3>
+                <div class="filters" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="text" id="vendor-search" placeholder="Search vendors by name or email" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; flex: 1; min-width: 200px;">
+                    <select id="vendor-status-filter" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">All Status</option>
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                    <button onclick="loadVendors()" class="btn btn-primary">Filter</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Business Name</th>
+                            <th>Services</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                            <th>Contact</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vendors-list">
+                        <!-- Vendors will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="add-service" class="tab-content">
+            <div class="section">
+                <h3>Add New Service</h3>
+                <form id="service-form">
+                    <div class="form-group">
+                        <label>Service Name</label>
+                        <input type="text" id="service-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Service Image</label>
+                        <input type="file" id="service-image" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="service-category" required>
+                            <option value="">Select Category</option>
+                            <option value="electricity">Electricity Payment</option>
+                            <option value="water">Water Payment</option>
+                            <option value="internet">Internet Service</option>
+                            <option value="cable">Cable TV</option>
+                            <option value="mobile">Mobile Recharge</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Rate (per unit)</label>
+                        <input type="number" id="service-rate" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Unit Type</label>
+                        <select id="service-unit" required>
+                            <option value="kwh">kWh (Electricity)</option>
+                            <option value="minute">Per Minute</option>
+                            <option value="hour">Per Hour</option>
+                            <option value="day">Per Day</option>
+                            <option value="month">Per Month</option>
+                            <option value="fixed">Fixed Price</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="service-description" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Add Service</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="earnings" class="tab-content">
+            <div class="section">
+                <h3>Earnings History</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Service</th>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="earnings-list">
+                        <!-- Earnings will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="analytics" class="tab-content">
+            <div class="section">
+                <h3>Analytics Dashboard</h3>
+                <div class="stats" style="margin-bottom: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-number" id="analytics-earnings">₦0</div>
+                        <div>Earnings by Service</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="analytics-users">0</div>
+                        <div>Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="retention-rate">0%</div>
+                        <div>Retention Rate</div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4>Top Performing Services</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Earnings</th>
+                                    <th>Users</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-services">
+                                <tr><td colspan="3">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4>User Regions</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Region</th>
+                                    <th>Users</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-regions">
+                                <tr><td colspan="3">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="notifications" class="tab-content">
+            <div class="section">
+                <h3>Notifications & Alerts</h3>
+                
+                <div class="stats" style="margin-bottom: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-number" id="usage-percentage">0%</div>
+                        <div>Current Usage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="balance-status">₦0</div>
+                        <div>Current Balance</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="active-alerts">0</div>
+                        <div>Active Alerts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="upcoming-bookings">0</div>
+                        <div>Upcoming Bookings</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4>Recent Notifications</h4>
+                        <div id="notifications-list" style="max-height: 300px; overflow-y: auto;">
+                            <!-- Notifications will be loaded here -->
+                        </div>
+                    </div>
+                    <div>
+                        <h4>Upcoming Sessions</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Service</th>
+                                    <th>User</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="upcoming-sessions">
+                                <tr><td colspan="4">No upcoming sessions</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="sessions" class="tab-content">
+            <div class="section">
+                <h3>Service Sessions</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>User</th>
+                            <th>Service</th>
+                            <th>Duration</th>
+                            <th>Cost</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessions-list">
+                        <!-- Sessions will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3002/api/v1';
+        let token = localStorage.getItem('vendorToken') || localStorage.getItem('token');
+        
+        // Check if user is authenticated
+        if (!token) {
+            alert('Please login first');
+            window.location.href = '/login';
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'overview') loadOverview();
+            if (tabName === 'services') loadServices();
+            if (tabName === 'vendors') loadVendors();
+            if (tabName === 'earnings') loadEarnings();
+            if (tabName === 'analytics') loadAnalytics();
+            if (tabName === 'notifications') loadNotifications();
+            if (tabName === 'sessions') loadSessions();
+        }
+
+        async function loadOverview() {
+            try {
+                const response = await fetch(`${API_BASE}/vendorprofiles/dashboard`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        alert('Session expired. Please login again.');
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('vendorToken');
+                        window.location.href = '/login';
+                        return;
+                    }
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Dashboard data:', data); // Debug log
+                
+                if (data.overview) {
+                    document.getElementById('total-services').textContent = data.overview.totalServices || 0;
+                    document.getElementById('active-services').textContent = data.overview.activeServices || 0;
+                    document.getElementById('total-earnings').textContent = `$${data.overview.totalEarnings || 0}`;
+                    document.getElementById('active-sessions').textContent = data.overview.totalSessionsHosted || 0;
+                } else {
+                    // Fallback for profile-only response
+                    document.getElementById('total-services').textContent = '0';
+                    document.getElementById('active-services').textContent = '0';
+                    document.getElementById('total-earnings').textContent = '$0';
+                    document.getElementById('active-sessions').textContent = '0';
+                    console.warn('No overview data found in response:', data);
+                }
+            } catch (error) {
+                console.error('Error loading overview:', error);
+                alert('Error loading dashboard data: ' + error.message);
+                // Set default values on error
+                document.getElementById('total-services').textContent = '0';
+                document.getElementById('active-services').textContent = '0';
+                document.getElementById('total-earnings').textContent = '$0';
+                document.getElementById('active-sessions').textContent = '0';
+            }
+        }
+
+        async function loadServices() {
+            try {
+                const response = await fetch(`${API_BASE}/service/vendor`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                const tbody = document.getElementById('services-list');
+                tbody.innerHTML = (data.services || []).map(service => `
+                    <tr>
+                        <td><img src="${service.image || '/uploads/default-service.png'}" style="width: 40px; height: 40px; border-radius: 4px;" alt="Service"></td>
+                        <td>${service.name}</td>
+                        <td>${service.category}</td>
+                        <td>₦${service.rate}/${service.unit}</td>
+                        <td>₦${service.totalEarnings || 0}</td>
+                        <td>${service.totalUsers || 0}</td>
+                        <td><span class="status ${service.isActive ? 'active' : 'inactive'}">${service.isActive ? 'Active' : 'Inactive'}</span></td>
+                        <td>
+                            <button class="btn btn-primary" onclick="editService('${service._id}')">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteService('${service._id}')">Delete</button>
+                            <button class="btn ${service.isActive ? 'btn-danger' : 'btn-success'}" onclick="toggleService('${service._id}', ${!service.isActive})">
+                                ${service.isActive ? 'Deactivate' : 'Activate'}
+                            </button>
+                        </td>
+                    </tr>
+                `).join('') || '<tr><td colspan="8">No services found</td></tr>';
+            } catch (error) {
+                console.error('Error loading services:', error);
+            }
+        }
+
+        async function loadEarnings() {
+            document.getElementById('earnings-list').innerHTML = '<tr><td colspan="5">No earnings data available</td></tr>';
+        }
+
+        async function loadAnalytics() {
+            // Load analytics data
+            document.getElementById('top-services').innerHTML = '<tr><td colspan="3">No analytics data available</td></tr>';
+            document.getElementById('user-regions').innerHTML = '<tr><td colspan="3">No regional data available</td></tr>';
+        }
+
+        async function loadNotifications() {
+            // Simulate usage and balance checks
+            const usage = Math.floor(Math.random() * 100);
+            const balance = Math.floor(Math.random() * 1000);
+            
+            document.getElementById('usage-percentage').textContent = `${usage}%`;
+            document.getElementById('balance-status').textContent = `₦${balance}`;
+            
+            // Check for alerts
+            let alerts = [];
+            if (usage >= 80) {
+                alerts.push({
+                    type: 'warning',
+                    message: `Usage at ${usage}% - Consider upgrading your plan`,
+                    time: new Date().toLocaleTimeString()
+                });
+            }
+            if (balance < 100) {
+                alerts.push({
+                    type: 'danger',
+                    message: 'Low balance detected - Please top up your wallet',
+                    time: new Date().toLocaleTimeString()
+                });
+            }
+            
+            document.getElementById('active-alerts').textContent = alerts.length;
+            
+            const notificationsList = document.getElementById('notifications-list');
+            if (alerts.length > 0) {
+                notificationsList.innerHTML = alerts.map(alert => `
+                    <div style="padding: 10px; margin: 5px 0; border-left: 4px solid ${alert.type === 'danger' ? '#dc3545' : '#ffc107'}; background: #f8f9fa; border-radius: 4px;">
+                        <strong>${alert.type === 'danger' ? '⚠️' : '📊'} ${alert.type.toUpperCase()}</strong><br>
+                        ${alert.message}<br>
+                        <small style="color: #666;">${alert.time}</small>
+                    </div>
+                `).join('');
+            } else {
+                notificationsList.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No active notifications</div>';
+            }
+            
+            // Show modal if balance is zero
+            if (balance === 0) {
+                showZeroBalanceModal();
+            }
+        }
+
+        function showZeroBalanceModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.5); display: flex; align-items: center; 
+                justify-content: center; z-index: 1000;
+            `;
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 8px; max-width: 400px; text-align: center;">
+                    <h3 style="color: #dc3545; margin-bottom: 15px;">⚠️ Session Paused</h3>
+                    <p>Your session has been paused due to zero balance.</p>
+                    <p>Please top up your wallet to continue.</p>
+                    <div style="margin-top: 20px;">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                                style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; margin: 5px;">Top Up Wallet</button>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                                style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 4px; margin: 5px;">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        async function loadSessions() {
+            document.getElementById('sessions-list').innerHTML = '<tr><td colspan="7">No sessions data available</td></tr>';
+        }
+
+        function editService(serviceId) {
+            alert(`Edit service ${serviceId} - Feature coming soon`);
+        }
+
+        function deleteService(serviceId) {
+            if (confirm('Are you sure you want to delete this service?')) {
+                alert(`Delete service ${serviceId} - Feature coming soon`);
+            }
+        }
+
+        async function loadVendors() {
+            try {
+                const searchTerm = document.getElementById('vendor-search')?.value || '';
+                const statusFilter = document.getElementById('vendor-status-filter')?.value || '';
+                
+                let url = `${API_BASE}/vendorprofiles/all`;
+                const params = new URLSearchParams();
+                
+                if (searchTerm) params.append('search', searchTerm);
+                if (statusFilter) params.append('status', statusFilter);
+                
+                if (params.toString()) {
+                    url += '?' + params.toString();
+                }
+                
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Vendors data:', data); // Debug log
+                
+                const tbody = document.getElementById('vendors-list');
+                
+                if (data.success && data.vendors && data.vendors.length > 0) {
+                    tbody.innerHTML = data.vendors.map(vendor => {
+                        console.log('Processing vendor:', vendor); // Debug log
+                        
+                        return `
+                            <tr>
+                                <td>${vendor.name || 'N/A'}</td>
+                                <td>${vendor.email || 'N/A'}</td>
+                                <td>${vendor.businessName || 'Not set'}</td>
+                                <td>${vendor.servicesCount || 0}</td>
+                                <td><span class="status ${vendor.isActive ? 'active' : 'inactive'}">${vendor.isActive ? 'Active' : 'Inactive'}</span></td>
+                                <td>${new Date(vendor.createdAt || Date.now()).toLocaleDateString()}</td>
+                                <td>
+                                    ${vendor.phone ? `📞 ${vendor.phone}` : 'No contact'}
+                                    ${vendor.website ? `<br>🌐 <a href="${vendor.website}" target="_blank">Website</a>` : ''}
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7">No vendors found</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading vendors:', error);
+                document.getElementById('vendors-list').innerHTML = `<tr><td colspan="7">Error loading vendors: ${error.message}</td></tr>`;
+            }
+        }
+
+        document.getElementById('service-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const serviceData = {
+                name: document.getElementById('service-name').value,
+                category: document.getElementById('service-category').value,
+                rate: parseFloat(document.getElementById('service-rate').value),
+                unit: document.getElementById('service-unit').value,
+                description: document.getElementById('service-description').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/service`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(serviceData)
+                });
+
+                if (response.ok) {
+                    alert('Service added successfully!');
+                    document.getElementById('service-form').reset();
+                    switchTab('services');
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + error.message);
+                }
+            } catch (error) {
+                alert('Error adding service: ' + error.message);
+            }
+        });
+
+        async function toggleService(serviceId, activate) {
+            try {
+                const response = await fetch(`${API_BASE}/service/${serviceId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ isActive: activate })
+                });
+
+                if (response.ok) {
+                    loadServices();
+                } else {
+                    alert('Error updating service');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Notification system
+        function checkUsageAndBalance() {
+            // This would normally fetch real data from your API
+            const usage = Math.floor(Math.random() * 100);
+            const balance = Math.floor(Math.random() * 1000);
+            
+            // Usage alert at 80%
+            if (usage >= 80) {
+                showNotification('Usage Alert', `Your usage is at ${usage}%. Consider upgrading your plan.`, 'warning');
+            }
+            
+            // Low balance alert
+            if (balance < 100) {
+                showNotification('Low Balance', `Your balance is ₦${balance}. Please top up to avoid service interruption.`, 'danger');
+            }
+        }
+
+        function showNotification(title, message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; 
+                background: ${type === 'danger' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#007bff'};
+                color: white; padding: 15px; border-radius: 8px; 
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 1000;
+                max-width: 300px; animation: slideIn 0.3s ease;
+            `;
+            notification.innerHTML = `
+                <strong>${title}</strong><br>
+                ${message}
+                <button onclick="this.parentElement.remove()" 
+                        style="float: right; background: none; border: none; color: white; font-size: 18px; cursor: pointer;">×</button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Check usage and balance every 30 seconds
+        setInterval(checkUsageAndBalance, 30000);
+        
+        // Load overview on page load
+        loadOverview();
+    </script>
+    
+    <style>
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</body>
+</html>
